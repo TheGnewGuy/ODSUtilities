@@ -33,7 +33,7 @@ void Pause()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	TCHAR mBuff[1024];		// BUffer for messasges
+	TCHAR mBuff[1024];		// Buffer for messages
 
 	printf("This program shows how to open an existing zipfile, display information about file.\n");
 	SetCurrentDirectory(_T("..\\Input"));
