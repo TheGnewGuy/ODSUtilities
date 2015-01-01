@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ODSUtilities", "ODSUtilitie
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "tinyxml\tinyxml_lib.vcxproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RapidXML", "RapidXML\RapidXML.vcxproj", "{E39B3FE6-1C75-44ED-98A5-E45CEC9A25A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -24,6 +26,10 @@ Global
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Debug|Win32.Build.0 = Debug|Win32
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|Win32.ActiveCfg = Release|Win32
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|Win32.Build.0 = Release|Win32
+		{E39B3FE6-1C75-44ED-98A5-E45CEC9A25A5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E39B3FE6-1C75-44ED-98A5-E45CEC9A25A5}.Debug|Win32.Build.0 = Debug|Win32
+		{E39B3FE6-1C75-44ED-98A5-E45CEC9A25A5}.Release|Win32.ActiveCfg = Release|Win32
+		{E39B3FE6-1C75-44ED-98A5-E45CEC9A25A5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
