@@ -9,6 +9,7 @@
 #include <processenv.h>
 #include <tchar.h>
 #include "rapidxml.hpp"
+#include "rapidxml_print.hpp"
 
 using namespace System;
 using namespace std;
@@ -92,17 +93,33 @@ int main(array<System::String ^> ^args)
 	{
 		printf("Sheet name %s. \n",
 			table_table->first_attribute("table:name")->value());
+		string sheetname = table_table->first_attribute("table:name")->value();
+		if (sheetname == "Sheet1")
+			table_table->first_attribute("table:name")->value("EditedSheet1");
+		if (sheetname == "Sheet2")
+			table_table->first_attribute("table:name")->value("EditedSheet2!");
+		if (sheetname == "Sheet3")
+			table_table->first_attribute("table:name")->value("EditedSheet3!");
 		// Interate over the rows
 		for (xml_node<> * table_tablerow = table_table->first_node("table:table-row"); table_tablerow; table_tablerow = table_tablerow->next_sibling())
 		{
 			// Interate over the cells
 			for (xml_node<> * table_tablecell = table_tablerow->first_node("table:table-cell"); table_tablecell; table_tablecell = table_tablecell->next_sibling())
 			{
-				xml_attribute<>* attr = table_tablecell->first_attribute();
-				// cout << "Node foobar has attribute " << attr->name() << endl;
-				string attrtemp = attr->name();
-				if ("table:number-columns-repeated" == attrtemp)
-					break;
+				// Iterate through all of the nodes attributes looking for a given string.
+				// In this case, repeated should be the only attribute but I wanted to have complete code.
+				int foundstring = false;
+				for (const rapidxml::xml_attribute<>* a = table_tablecell->first_attribute(); a; a = a->next_attribute())
+				{
+					string attrtemp = a->name();
+					if (attrtemp == "table:number-columns-repeated")
+						foundstring = true;
+				}
+
+				// When we have a match we are done. The repeated is repeating empty cells.
+				if (foundstring) break;
+
+				// The actual data is in the "text:p" field
 				xml_node<> * table_celltext = table_tablecell->first_node("text:p");
 				string myval = table_celltext->value();
 				printf("Cell value %s. \n",
@@ -119,5 +136,13 @@ int main(array<System::String ^> ^args)
 //	string content = cur_node->value(); // if the node doesn't exist, this line will crash
 
 //	cout << content << endl;
+	cout << "Write file out" << endl;
 	Pause();
+
+	ofstream file;
+	//file.open(filename.c_str());
+	file.open("updated.xml");
+	// The following required #include "rapidxml_print.hpp" to convert the DOM tree into 'normal' XML
+	file << doc;
+	file.close();
 }
