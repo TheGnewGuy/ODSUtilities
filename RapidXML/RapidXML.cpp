@@ -10,6 +10,7 @@
 #include <tchar.h>
 #include "rapidxml.hpp"
 #include "rapidxml_print.hpp"
+#include "RapidXmlWrapper.h"
 
 using namespace System;
 using namespace std;
@@ -97,9 +98,9 @@ int main(array<System::String ^> ^args)
 		if (sheetname == "Sheet1")
 			table_table->first_attribute("table:name")->value("EditedSheet1");
 		if (sheetname == "Sheet2")
-			table_table->first_attribute("table:name")->value("EditedSheet2!");
+			table_table->first_attribute("table:name")->value("EditedSheet2");
 		if (sheetname == "Sheet3")
-			table_table->first_attribute("table:name")->value("EditedSheet3!");
+			table_table->first_attribute("table:name")->value("EditedSheet3");
 		// Interate over the rows
 		for (xml_node<> * table_tablerow = table_table->first_node("table:table-row"); table_tablerow; table_tablerow = table_tablerow->next_sibling())
 		{
@@ -130,12 +131,10 @@ int main(array<System::String ^> ^args)
 		cout << endl;
 	}
 
-	// go straight to the first Package node
-//	cur_node = cur_node->first_node("Package");
-//	cur_node = cur_node->first_node("table:table");
-//	string content = cur_node->value(); // if the node doesn't exist, this line will crash
+	// Delete a selected node
+	rapidxml::xml_node<>* dNode = RapidXmlWrapper::getNodeByNameAndAttribute("table:table", "table:name", "EditedSheet3", office_spreadsheet);
+	office_spreadsheet->remove_node(dNode);
 
-//	cout << content << endl;
 	cout << "Write file out" << endl;
 	Pause();
 

@@ -6,6 +6,13 @@
 #include <tchar.h>
 #include "unzip.h"
 
+// On MSVC, disable "conditional expression is constant" warning (level 4). 
+// This warning is almost impossible to avoid with certain types of templated code
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)   // 
+#endif
+
 // THIS FILE is almost entirely based upon code by Jean-loup Gailly
 // and Mark Adler. It has been modified by Lucian Wischik.
 // The modifications were: incorporate the bugfixes of 1.1.4, allow
