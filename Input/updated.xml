@@ -684,6 +684,14 @@
 					<table:table-cell table:number-columns-repeated="16384"/>
 				</table:table-row>
 			</table:table>
+			<table:table table:name="NewSheetName" table:style-name="ta1">
+				<table:table-column table:style-name="co1" table:number-columns-repeated="20" table:default-cell-style-name="ce1"/>
+				<table:table-row table:style-name="ro1">
+					<table:table-cell office:value-type="string" table:style-name="ce1">
+						<text:p>a1b1c1</text:p>
+					</table:table-cell>
+				</table:table-row>
+			</table:table>
 		</office:spreadsheet>
 	</office:body>
 </office:document-content>

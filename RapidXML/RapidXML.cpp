@@ -135,6 +135,76 @@ int main(array<System::String ^> ^args)
 	rapidxml::xml_node<>* dNode = RapidXmlWrapper::getNodeByNameAndAttribute("table:table", "table:name", "EditedSheet3", office_spreadsheet);
 	office_spreadsheet->remove_node(dNode);
 
+	// Append a node
+	//std::string new_src = "<table:table><table:table-column>NewSheet</table:table-column><table:table-row>1</table:table-row></table:table>";
+	std::string new_src1 = "<table:table></table:table>";
+	rapidxml::xml_document<> newnode1;
+	std::vector<char> new_s1(new_src1.begin(), new_src1.end());
+	new_s1.push_back(0); // make it zero-terminated as per RapidXml's docs
+	newnode1.parse<0>(&new_s1[0]);
+	char sheetname[] = "NewSheetName";
+	char stylename[] = "ta1";
+	rapidxml::xml_node<>* a1 = newnode1.first_node(); /* Node to append */
+	a1->append_attribute(doc.allocate_attribute("table:name", sheetname));
+	a1->append_attribute(doc.allocate_attribute("table:style-name", stylename));
+
+		std::string new_src2 = "<table:table-column></table:table-column>";
+		rapidxml::xml_document<> newnode2;
+		std::vector<char> new_s2(new_src2.begin(), new_src2.end());
+		new_s2.push_back(0); // make it zero-terminated as per RapidXml's docs
+		newnode2.parse<0>(&new_s2[0]);
+		char attrib_2_1[] = "co1";
+		char attrib_2_2[] = "20";		// Deafult was 15384
+		char attrib_2_3[] = "ce1";
+		rapidxml::xml_node<>* a2 = newnode2.first_node(); /* Node to append */
+		a2->append_attribute(doc.allocate_attribute("table:style-name", attrib_2_1));
+		a2->append_attribute(doc.allocate_attribute("table:number-columns-repeated", attrib_2_2));
+		a2->append_attribute(doc.allocate_attribute("table:default-cell-style-name", attrib_2_3));
+		rapidxml::xml_node<> *new_node2 = newnode2.clone_node(a2);
+
+	a1->append_node(new_node2);
+
+		std::string new_src3 = "<table:table-row></table:table-row>";
+		rapidxml::xml_document<> newnode3;
+		std::vector<char> new_s3(new_src3.begin(), new_src3.end());
+		new_s3.push_back(0); // make it zero-terminated as per RapidXml's docs
+		newnode3.parse<0>(&new_s3[0]);
+		char attrib_3_1[] = "ro1";
+		rapidxml::xml_node<>* a3 = newnode3.first_node(); /* Node to append */
+		a3->append_attribute(doc.allocate_attribute("table:style-name", attrib_3_1));
+
+			std::string new_src4 = "<table:table-cell></table:table-cell>";
+			rapidxml::xml_document<> newnode4;
+			std::vector<char> new_s4(new_src4.begin(), new_src4.end());
+			new_s4.push_back(0); // make it zero-terminated as per RapidXml's docs
+			newnode4.parse<0>(&new_s4[0]);
+			char attrib_4_1[] = "string";
+			char attrib_4_2[] = "ce1";
+			rapidxml::xml_node<>* a4 = newnode4.first_node(); /* Node to append */
+			a4->append_attribute(doc.allocate_attribute("office:value-type", attrib_4_1));
+			a4->append_attribute(doc.allocate_attribute("table:style-name", attrib_4_2));
+
+				std::string new_src5 = "<text:p></text:p>";
+				rapidxml::xml_document<> newnode5;
+				std::vector<char> new_s5(new_src5.begin(), new_src5.end());
+				new_s5.push_back(0); // make it zero-terminated as per RapidXml's docs
+				newnode5.parse<0>(&new_s5[0]);
+				rapidxml::xml_node<>* a5 = newnode5.first_node(); /* Node to append */
+				a5->value("a1b1c1");
+				rapidxml::xml_node<> *new_node5 = newnode5.clone_node(a5);
+
+			a4->append_node(new_node5);
+			rapidxml::xml_node<> *new_node4 = newnode4.clone_node(a4);
+
+		a3->append_node(new_node4);
+		rapidxml::xml_node<> *new_node3 = newnode3.clone_node(a3);
+
+	a1->append_node(new_node3);
+
+	rapidxml::xml_node<>* aNode = RapidXmlWrapper::getNodeByName("office:spreadsheet", office_body);
+	rapidxml::xml_node<> *new_node1 = newnode1.clone_node(a1);
+	aNode->append_node(new_node1);
+
 	cout << "Write file out" << endl;
 	Pause();
 
