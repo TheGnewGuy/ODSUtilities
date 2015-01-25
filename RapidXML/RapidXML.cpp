@@ -11,10 +11,14 @@
 #include "rapidxml.hpp"
 #include "rapidxml_print.hpp"
 #include "RapidXmlWrapper.h"
+#include "unzip.h"
+#include "zip.h"
 
 using namespace System;
 using namespace std;
 using namespace rapidxml;
+
+TCHAR mBuff[1024];		// Buffer for messages
 
 void Pause()
 {
@@ -23,6 +27,40 @@ void Pause()
 	cin.ignore(10000, '\n');
 	return;
 }
+
+bool any_errors = false; bool p_abort = false;
+void msg(const TCHAR *s)
+{
+	if (s[0] == '*') any_errors = true;
+#ifdef UNDER_CE
+	int res = IDOK;
+	if (s[0] == '*') res = MessageBox(0, s, _T("Zip error"), MB_ICONERROR | MB_OKCANCEL);
+	else if (s[0] == '.') MessageBeep(0);
+	else MessageBox(0, s, _T("Zip test"), MB_OKCANCEL);
+	if (res == IDCANCEL) p_abort = true;
+#else
+	_tprintf(_T("%s\n"), s);
+#endif
+}
+
+void ExtractToDisk(HZIP hz, int index, ZIPENTRY ze)
+{
+	wsprintf(mBuff, _T("Extract file: %s to disk"), ze.name);
+	msg(mBuff);
+	UnzipItem(hz, index, ze.name);
+}
+
+void ExtractToMemory(HZIP hz, int index, ZIPENTRY ze)
+{
+	char *ibuf = NULL;
+
+	wsprintf(mBuff, _T("Extract file: %s to memory"), ze.name);
+	msg(mBuff);
+	ibuf = new char[ze.unc_size];
+	UnzipItem(hz, index, ibuf, ze.unc_size);
+	delete[] ibuf;
+}
+
 
 int main(array<System::String ^> ^args)
 {
@@ -40,8 +78,49 @@ int main(array<System::String ^> ^args)
 		return 1;
 	}
 
+	HZIP hz = OpenZip(_T("input.ods"), 0);
+	if (hz == 0)
+		msg(_T("* Failed to open empty.zip"));
+	
+	ZIPENTRY ze;
+	//int i;
+
+	GetZipItem(hz, -1, &ze);
+	int numitems = ze.index;
+	if (!SetCurrentDirectory(_T("test01")))
+	{
+		printf("SetCurrentDirectory failed (%d)\n", GetLastError());
+		Pause();
+		return 1;
+	}
+	for (int i = 0; i<numitems; i++)
+	{
+		GetZipItem(hz, i, &ze);
+		wsprintf(mBuff, _T("Index: %i\tCompSize: %i\tOrigSize: %i\tName: %s"), ze.index, ze.comp_size, ze.unc_size, ze.name);
+		msg(mBuff);
+		ZRESULT zRc = UnzipItem(hz, i, ze.name);
+		switch (zRc)
+		{
+		case ZR_OK:
+			msg(_T("* Found File"));
+			break;
+		case ZR_NOTFOUND:	// couldn't find that file in the zip
+			msg(_T("* Failed to find File:"));
+			break;
+		case ZR_NOFILE:		// couldn't create/open the file
+			msg(_T("* No-File:"));
+			break;
+		}
+		_tprintf(TEXT("Result is: %d\n"), zRc);
+		//ExtractToDisk(hz, i, ze);
+	}
+
 	dwRet = GetCurrentDirectory(BUFSIZE, Buffer);
-	//_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
+	_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
+
+	SetCurrentDirectory(_T("..\\"));
+	dwRet = GetCurrentDirectory(BUFSIZE, Buffer);
+	_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
 
 //	ifstream in("demo.xml");
 	ifstream in("content.xml");
@@ -214,4 +293,6 @@ int main(array<System::String ^> ^args)
 	// The following required #include "rapidxml_print.hpp" to convert the DOM tree into 'normal' XML
 	file << doc;
 	file.close();
+
+	CloseZip(hz);
 }
