@@ -200,13 +200,18 @@ void dump_to_stdout(const char* pFilename)
 }
 
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, _TCHAR* argv[])
 {
+	#define BUFSIZE MAX_PATH
+	TCHAR Buffer[BUFSIZE];
+
 	printf("This program shows how to open an existing zipfile, display information about file.\n");
 	SetCurrentDirectory(_T("..\\Input"));
 	HZIP hz = OpenZip(_T("input.ods"), 0);
 	if (hz == 0) 
 		msg(_T("* Failed to open empty.zip"));
+	GetCurrentDirectory(BUFSIZE, Buffer);
+	_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
 
 	ZIPENTRY ze; 
 	GetZipItem(hz,-1,&ze); 
@@ -216,7 +221,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		GetZipItem(hz,i,&ze);
 		wsprintf(mBuff, _T("Index: %i\tCompSize: %i\tOrigSize: %i\tName: %s"), ze.index, ze.comp_size, ze.unc_size, ze.name);
 		msg(mBuff);
-		//UnzipItem(hz,i,ze.name);
+		UnzipItem(hz,i,ze.name);
 	}
 	//   - unzip to a membuffer -
 	int i; 

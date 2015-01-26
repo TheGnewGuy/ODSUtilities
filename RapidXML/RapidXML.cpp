@@ -14,7 +14,7 @@
 #include "unzip.h"
 #include "zip.h"
 
-using namespace System;
+//using namespace System;
 using namespace std;
 using namespace rapidxml;
 
@@ -62,7 +62,9 @@ void ExtractToMemory(HZIP hz, int index, ZIPENTRY ze)
 }
 
 
-int main(array<System::String ^> ^args)
+//int main(array<System::String ^> ^args)
+//int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, _TCHAR* argv[])
 {
 	#define BUFSIZE MAX_PATH
 
@@ -79,6 +81,8 @@ int main(array<System::String ^> ^args)
 		Pause();
 		return 1;
 	}
+	GetCurrentDirectory(BUFSIZE, Buffer);
+	_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
 
 	HZIP hz = OpenZip(_T("input.ods"), 0);
 	if (hz == 0)
@@ -87,12 +91,15 @@ int main(array<System::String ^> ^args)
 	ZIPENTRY ze; 
 	GetZipItem(hz, -1, &ze); 
 	int numitems = ze.index;
-	//if (!SetCurrentDirectory(_T("test01")))
-	//{
-	//	printf("SetCurrentDirectory failed (%d)\n", GetLastError());
-	//	Pause();
-	//	return 1;
-	//}
+	if (!SetCurrentDirectory(_T("test01")))
+	{
+		printf("SetCurrentDirectory failed (%d)\n", GetLastError());
+		Pause();
+		return 1;
+	}
+	GetCurrentDirectory(BUFSIZE, Buffer);
+	_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
+
 	for (int i = 0; i<numitems; i++)
 	{
 		GetZipItem(hz, i, &ze);
@@ -105,9 +112,7 @@ int main(array<System::String ^> ^args)
 		//ExtractToDisk(hz, i, ze);
 	}
 
-	_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
-
-//	SetCurrentDirectory(_T("..\\"));
+	SetCurrentDirectory(_T("..\\"));
 	dwRet = GetCurrentDirectory(BUFSIZE, Buffer);
 	_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
 
