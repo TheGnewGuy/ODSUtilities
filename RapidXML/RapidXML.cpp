@@ -69,6 +69,8 @@ int main(array<System::String ^> ^args)
 	string input_xml;
 	string line;
 	TCHAR Buffer[BUFSIZE];
+	TCHAR MsgBuffer[BUFSIZE];
+	unsigned msglen;
 	DWORD dwRet;
 
 	if ( !SetCurrentDirectory(_T("..\\Input")) )
@@ -81,44 +83,31 @@ int main(array<System::String ^> ^args)
 	HZIP hz = OpenZip(_T("input.ods"), 0);
 	if (hz == 0)
 		msg(_T("* Failed to open empty.zip"));
-	
-	ZIPENTRY ze;
-	//int i;
 
-	GetZipItem(hz, -1, &ze);
+	ZIPENTRY ze; 
+	GetZipItem(hz, -1, &ze); 
 	int numitems = ze.index;
-	if (!SetCurrentDirectory(_T("test01")))
-	{
-		printf("SetCurrentDirectory failed (%d)\n", GetLastError());
-		Pause();
-		return 1;
-	}
+	//if (!SetCurrentDirectory(_T("test01")))
+	//{
+	//	printf("SetCurrentDirectory failed (%d)\n", GetLastError());
+	//	Pause();
+	//	return 1;
+	//}
 	for (int i = 0; i<numitems; i++)
 	{
 		GetZipItem(hz, i, &ze);
-		wsprintf(mBuff, _T("Index: %i\tCompSize: %i\tOrigSize: %i\tName: %s"), ze.index, ze.comp_size, ze.unc_size, ze.name);
-		msg(mBuff);
+		//wsprintf(mBuff, _T("Index: %i\tCompSize: %i\tOrigSize: %i\tName: %s"), ze.index, ze.comp_size, ze.unc_size, ze.name);
+		//msg(mBuff);
 		ZRESULT zRc = UnzipItem(hz, i, ze.name);
-		switch (zRc)
-		{
-		case ZR_OK:
-			msg(_T("* Found File"));
-			break;
-		case ZR_NOTFOUND:	// couldn't find that file in the zip
-			msg(_T("* Failed to find File:"));
-			break;
-		case ZR_NOFILE:		// couldn't create/open the file
-			msg(_T("* No-File:"));
-			break;
-		}
-		_tprintf(TEXT("Result is: %d\n"), zRc);
+		msglen = FormatZipMessage(zRc, MsgBuffer, BUFSIZE);
+		//msg(MsgBuffer);
+		_tprintf(TEXT("Result is: %d\n%s\nFile name: %s\n"), zRc, MsgBuffer, ze.name);
 		//ExtractToDisk(hz, i, ze);
 	}
 
-	dwRet = GetCurrentDirectory(BUFSIZE, Buffer);
 	_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
 
-	SetCurrentDirectory(_T("..\\"));
+//	SetCurrentDirectory(_T("..\\"));
 	dwRet = GetCurrentDirectory(BUFSIZE, Buffer);
 	_tprintf(TEXT("Current directory is: (%s)\n"), Buffer);
 
